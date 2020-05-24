@@ -20,6 +20,7 @@ pub struct TexturePacker<'a, T: 'a + Clone> {
     frames: HashMap<String, Frame>,
     packer: Box<dyn Packer>,
     config: TexturePackerConfig,
+    row_padding: u32,
 }
 
 impl<'a, Pix: Pixel, T: 'a + Clone + Texture<Pixel = Pix>> TexturePacker<'a, T> {
@@ -30,6 +31,7 @@ impl<'a, Pix: Pixel, T: 'a + Clone + Texture<Pixel = Pix>> TexturePacker<'a, T> 
             frames: HashMap::new(),
             packer: Box::new(SkylinePacker::new(config)),
             config,
+            row_padding: 0
         }
     }
 }
@@ -101,6 +103,11 @@ impl<'a, Pix: Pixel, T: Clone + Texture<Pixel = Pix>> TexturePacker<'a, T> {
         Ok(())
     }
 
+    /// s
+    pub fn set_row_padding(&mut self, row_padding: u32) {
+        self.row_padding = row_padding;
+    }
+
     /// Get the backing mapping from strings to frames.
     pub fn get_frames(&self) -> &HashMap<String, Frame> {
         &self.frames
@@ -147,7 +154,7 @@ where
         }
 
         if let Some(right) = right {
-            right + 1 + self.config.border_padding
+            right + 1 + self.config.border_padding + self.row_padding
         } else {
             0
         }
